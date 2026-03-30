@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!--
+    ✅ CORRECT THYMELEAF PATTERN:
+    step1.html is a COMPLETE page by itself.
+    It uses th:replace on the <html> tag to swap itself with layout.html,
+    and injects its own content into the layout's fragment slot.
+
+    This is the standard Thymeleaf layout pattern — no dynamic ~{${var}} needed.
+-->
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{builder/layout :: layout(~{::title}, ~{::section}, 1)}">
+<head>
+    <title>Step 1 — Package Type</title>
+</head>
+<body>
+
+    <!-- This <section> is injected into layout.html's stage slot -->
+    <section>
+
+        <div class="step-guide">
+            <b>Choose Base Type</b>
+            Select the foundational billing type.<br>
+            <b>Normal</b> is simple;<br>
+            <b>Commercial</b> allows full recurring billing configuration.
+        </div>
+
+        <h1 class="main-title">Choose Base Type</h1>
+
+        <div id="typeSection" class="type-grid">
+            <div class="type-card" onclick="selectType('PREPAID')">PREPAID</div>
+            <div class="type-card" onclick="selectType('POSTPAID')">POSTPAID</div>
+        </div>
+
+        <div id="subTypeSection" class="type-grid hidden">
+            <div class="type-card" onclick="selectSubType('NORMAL')">NORMAL</div>
+            <div class="type-card" onclick="selectSubType('COMMERCIAL')">COMMERCIAL</div>
+        </div>
+
+        <script th:src="@{/js/step1.js}"></script>
+
+    </section>
+
+</body>
+</html>

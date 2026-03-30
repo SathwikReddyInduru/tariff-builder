@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{builder/layout :: layout(~{::title}, ~{::section}, 2)}">
+
+<head>
+    <title>Step 2 — Service</title>
+</head>
+
+<body>
+
+<section>
+
+    <div class="step-guide">
+        <b>Select Services</b><br>
+        Choose the services to include in this package.
+    </div>
+
+    <h1 class="main-title">Select Services</h1>
+
+    <div class="type-grid">
+
+        <div class="type-card">VOICE</div>
+        <div class="type-card">DATA</div>
+        <div class="type-card">SMS</div>
+
+    </div>
+
+</section>
+
+</body>
+</html>
