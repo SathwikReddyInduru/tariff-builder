@@ -1,12 +1,4 @@
 <!DOCTYPE html>
-<!--
-    ✅ CORRECT THYMELEAF PATTERN:
-    step1.html is a COMPLETE page by itself.
-    It uses th:replace on the <html> tag to swap itself with layout.html,
-    and injects its own content into the layout's fragment slot.
-
-    This is the standard Thymeleaf layout pattern — no dynamic ~{${var}} needed.
--->
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{builder/layout :: layout(~{::title}, ~{::section}, 1)}">
 <head>
@@ -14,13 +6,17 @@
 </head>
 <body>
 
-    <!-- This <section> is injected into layout.html's stage slot -->
-    <section>
+    <!--
+        class="stage" lives HERE on the step's own <section>.
+        layout.html uses <th:block th:replace> which drops itself
+        and puts this element directly inside .workspace — class intact.
+    -->
+    <section class="stage">
 
         <div class="step-guide">
             <b>Choose Base Type</b>
-            Select the foundational billing type.<br>
-            <b>Normal</b> is simple;<br>
+            Select the foundational billing type.
+            <b>Normal</b> is simple;
             <b>Commercial</b> allows full recurring billing configuration.
         </div>
 

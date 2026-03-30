@@ -1,31 +1,24 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{builder/layout :: layout(~{::title}, ~{::section}, 2)}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{builder/layout :: layout(~{::title}, ~{::section}, 2)}">
 
 <head>
     <title>Step 2 — Service</title>
 </head>
 
 <body>
+    <section class="stage">
+        <div class="step-guide">
+            <b>Base Service Plan</b>
+            Filter by Voice/SMS/Data and select the core service plan.
+        </div>
 
-<section>
+        <div class="svc-container">
+            <button class="svc-pill" onclick="toggleSvc('VOICE', this)">VOICE</button>
+            <button class="svc-pill" onclick="toggleSvc('SMS', this)">SMS</button>
+            <button class="svc-pill" onclick="toggleSvc('DATA', this)">DATA</button>
+        </div>
 
-    <div class="step-guide">
-        <b>Select Services</b><br>
-        Choose the services to include in this package.
-    </div>
-
-    <h1 class="main-title">Select Services</h1>
-
-    <div class="type-grid">
-
-        <div class="type-card">VOICE</div>
-        <div class="type-card">DATA</div>
-        <div class="type-card">SMS</div>
-
-    </div>
-
-</section>
-
+        <script th:src="@{/js/step2.js}"></script>
+    </section>
 </body>
 </html>

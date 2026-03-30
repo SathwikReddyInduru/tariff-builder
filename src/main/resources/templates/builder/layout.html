@@ -1,11 +1,4 @@
 <!DOCTYPE html>
-<!--
-    layout.html  —  src/main/resources/templates/builder/layout.html
-
-    Exposes itself as th:fragment="layout(titleFrag, stageFrag, activeStep)"
-    Each step page's <html> tag does:
-        th:replace="~{builder/layout :: layout(~{::title}, ~{::section}, 1)}"
--->
 <html xmlns:th="http://www.thymeleaf.org"
       th:fragment="layout(titleFrag, stageFrag, activeStep)">
 <head>
@@ -18,47 +11,33 @@
 <div class="app-container">
 
     <!-- STEP RAIL -->
-	<nav class="step-rail">
-		
-	    <a href="/builder/step1"
-	       class="step-node"
-	       th:classappend="${activeStep == 1} ? ' active'">
-	        <b>STEP 1</b><span>PKG TYPE</span>
-	    </a>
-
-	    <a href="/builder/step2"
-	       class="step-node"
-	       th:classappend="${activeStep == 2} ? ' active'">
-	        <b>STEP 2</b><span>SERVICE</span>
-	    </a>
-
-	    <a href="/builder/step3"
-	       class="step-node"
-	       th:classappend="${activeStep == 3} ? ' active'">
-	        <b>STEP 3</b><span>DEFAULT</span>
-	    </a>
-
-	    <a href="/builder/step4"
-	       class="step-node"
-	       th:classappend="${activeStep == 4} ? ' active'">
-	        <b>STEP 4</b><span>ADDITIONAL</span>
-	    </a>
-
-	    <a href="/builder/step5"
-	       class="step-node"
-	       th:classappend="${activeStep == 5} ? ' active'">
-	        <b>STEP 5</b><span>PRICING</span>
-	    </a>
-
-	</nav>
+    <nav class="step-rail">
+        <a href="/builder/step1" class="step-node" th:classappend="${activeStep == 1} ? ' active'">
+            <b>STEP 1</b><span>PKG TYPE</span>
+        </a>
+        <a href="/builder/step2" class="step-node" th:classappend="${activeStep == 2} ? ' active'">
+            <b>STEP 2</b><span>SERVICE</span>
+        </a>
+        <a href="/builder/step3" class="step-node" th:classappend="${activeStep == 3} ? ' active'">
+            <b>STEP 3</b><span>DEFAULT</span>
+        </a>
+        <a href="/builder/step4" class="step-node" th:classappend="${activeStep == 4} ? ' active'">
+            <b>STEP 4</b><span>ADDITIONAL</span>
+        </a>
+        <a href="/builder/step5" class="step-node" th:classappend="${activeStep == 5} ? ' active'">
+            <b>STEP 5</b><span>PRICING</span>
+        </a>
+    </nav>
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
-        <div class="tab active">LIBRARY</div>
-        <div class="tab">DRAFTS</div>
+        <div class="sidebar-tabs">
+            <div class="tab active">LIBRARY</div>
+            <div class="tab">DRAFTS</div>
+        </div>
+        <div class="sidebar-content" id="comp-list"></div>
     </aside>
 
-    <!-- MAIN -->
     <main class="workspace">
 
         <!-- HEADER -->
@@ -76,10 +55,11 @@
             </div>
         </header>
 
-        <!-- STAGE — step content injected here -->
-        <section class="stage" th:replace="${stageFrag}">
-            <!-- replaced by each step's <section> -->
-        </section>
+        <!--
+            th:replace is used here.
+            The <section> that replaces this MUST have class="stage" — done in each step file.
+        -->
+        <th:block th:replace="${stageFrag}"></th:block>
 
         <!-- FOOTER -->
         <footer class="config-panel">
