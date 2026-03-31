@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{builder/layout :: layout(~{::title}, ~{::section}, 5)}">
+
+<head>
+    <title>Step 5 — Service</title>
+</head>
+
+<body>
+    <section class="stage">
+        <div class="step-guide">
+            <b>Finalize Pricing</b> Complete the mandatory business fields before
+            saving.
+        </div>
+
+        <div class="form-container">
+            <div class="form-group">
+                <label>PACKAGE CHARGE</label> <input type="text">
+            </div>
+
+            <div class="form-group">
+                <label>PACKAGE END DATE</label> <input type="date">
+            </div>
+
+            <div class="form-group">
+                <label>PUBLICITY CODE</label> <input type="text">
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox"> <label>IS CORPORATE PACK</label>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>

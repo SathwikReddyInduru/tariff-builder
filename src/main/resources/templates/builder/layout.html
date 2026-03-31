@@ -10,8 +10,8 @@
 
 <div class="app-container">
 
-    <!-- STEP RAIL -->
-    <nav class="step-rail">
+    <!-- STEP RAIL — hidden when eReload is active -->
+    <nav class="step-rail" id="stepRail">
         <a href="/builder/step1" class="step-node" th:classappend="${activeStep == 1} ? ' active'">
             <b>STEP 1</b><span>PKG TYPE</span>
         </a>
@@ -29,8 +29,8 @@
         </a>
     </nav>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
+    <!-- SIDEBAR — hidden when eReload is active -->
+    <aside class="sidebar" id="sidebar">
         <div class="sidebar-tabs">
             <div class="tab active">LIBRARY</div>
             <div class="tab">DRAFTS</div>
@@ -44,31 +44,155 @@
         <header class="header">
             <div class="header-inner">
                 <div style="display:flex; align-items:center;">
-                    <div class="logo">Builder | user1</div>
-                    <div class="module-nav">
-                        <div class="mod-btn active">PACKAGE BUILDER</div>
-                        <div class="mod-btn">ERELOAD</div>
+
+                    <!--
+                        REQUIREMENT 1: Display logged-in username.
+                        ${username} is set in every step route in BuilderController.
+                        Fallback to 'user' if null (direct URL access).
+                    -->
+                    <div class="logo">
+                        Builder | <span th:text="${username != null ? username : 'user'}">user</span>
                     </div>
-                    <button class="logout-btn">LOGOUT</button>
+
+                    <div class="module-nav">
+                        <!-- Active class toggled by JS switchModule() -->
+                        <div class="mod-btn active" id="m-pkg"    onclick="switchModule('pkg')">PACKAGE BUILDER</div>
+                        <div class="mod-btn"         id="m-reload" onclick="switchModule('reload')">ERELOAD</div>
+                    </div>
+
+                    <button class="logout-btn" onclick="logout()">LOGOUT</button>
                 </div>
-                <input type="text" placeholder="Name..." class="config-name">
+                <input type="text" placeholder="Name..." class="config-name" id="configName">
             </div>
         </header>
 
         <!--
-            th:replace is used here.
-            The <section> that replaces this MUST have class="stage" — done in each step file.
+            STEP CONTENT — each step injects its <section class="stage"> here.
+            th:block vanishes after render, preserving the step's own classes.
         -->
         <th:block th:replace="${stageFrag}"></th:block>
 
+        <!--
+            REQUIREMENT 2: eReload stage — hidden by default, shown by switchModule('reload').
+            Mirrors ocs.html renderStage() eReload block exactly.
+        -->
+        <section class="stage hidden" id="reloadStage">
+            <div class="dropped-card" style="max-width:600px; margin:0 auto; text-align:left;">
+                <h2 style="color:var(--primary); margin-bottom:20px;">eReload Configuration</h2>
+                <div class="card-grid">
+                    <div class="card-field">
+                        <label>Recharge ID</label>
+                        <input type="text" id="rechargeId">
+                    </div>
+                    <div class="card-field">
+                        <label>Recharge Type</label>
+                        <select id="rechargeType">
+                            <option>Single</option>
+                            <option>Range</option>
+                        </select>
+                    </div>
+                    <div class="card-field">
+                        <label>MRP / Cost (RM)</label>
+                        <input type="number" id="mrp">
+                    </div>
+                    <div class="card-field">
+                        <label>AirTime Value</label>
+                        <input type="number" id="airTime">
+                    </div>
+                    <div class="card-field">
+                        <label>Validity (Days)</label>
+                        <input type="number" id="validityDays">
+                    </div>
+                    <div class="card-field">
+                        <label>Grace Period 1 (Days)</label>
+                        <input type="number" id="gracePeriod1">
+                    </div>
+                    <div class="card-field">
+                        <label>Grace Period 2 (Days)</label>
+                        <input type="number" id="gracePeriod2">
+                    </div>
+                </div>
+                <button class="save-btn" style="width:100%; margin-top:30px;" onclick="saveReload()">
+                    Save eReload Configuration
+                </button>
+            </div>
+        </section>
+
         <!-- FOOTER -->
-        <footer class="config-panel">
-            <button class="btn-secondary">Hierarchy</button>
-            <button class="btn-primary">SAVE CONFIG</button>
+        <footer class="config-panel" id="footerActions">
+            <button class="btn-secondary" onclick="viewTree()">Hierarchy</button>
+            <button class="btn-primary"   onclick="saveConfiguration()">SAVE CONFIG</button>
         </footer>
 
     </main>
 </div>
+
+<script>
+    /* ── Module switcher ── */
+    function switchModule(m) {
+        // toggle mod-btn active
+        document.getElementById('m-pkg').classList.toggle('active',    m === 'pkg');
+        document.getElementById('m-reload').classList.toggle('active', m === 'reload');
+
+        const isPkg = m === 'pkg';
+
+        // show/hide step rail and sidebar
+        document.getElementById('stepRail').style.display = isPkg ? 'flex' : 'none';
+        document.getElementById('sidebar').style.display  = isPkg ? 'flex' : 'none';
+
+        // show/hide footer
+        document.getElementById('footerActions').style.display = isPkg ? 'flex' : 'none';
+
+        // show/hide step stage vs reload stage
+        // the step stage is the <section class="stage"> injected by each step
+        const stepStage = document.querySelector('.stage:not(#reloadStage)');
+        if (stepStage) stepStage.classList.toggle('hidden', !isPkg);
+
+        document.getElementById('reloadStage').classList.toggle('hidden', isPkg);
+    }
+
+    /* ── Save eReload ── */
+    async function saveReload() {
+        const payload = {
+            rechargeId:   document.getElementById('rechargeId').value,
+            rechargeType: document.getElementById('rechargeType').value,
+            mrp:          document.getElementById('mrp').value,
+            airTime:      document.getElementById('airTime').value,
+            validityDays: document.getElementById('validityDays').value,
+            gracePeriod1: document.getElementById('gracePeriod1').value,
+            gracePeriod2: document.getElementById('gracePeriod2').value,
+        };
+        if (!payload.rechargeId) { alert('Enter Recharge ID'); return; }
+        try {
+            const res = await fetch('/api/v1/saveReload', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) alert('eReload Configuration Saved.');
+        } catch(e) { alert('Backend error.'); }
+    }
+
+    /* ── Save config (package) ── */
+    async function saveConfiguration() {
+        const name = document.getElementById('configName').value;
+        if (!name) { alert('Enter Configuration Name'); return; }
+        try {
+            const res = await fetch('/api/v1/saveTariff', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, id: Date.now() })
+            });
+            if (res.ok) alert('Package Saved.');
+        } catch(e) { alert('Backend error.'); }
+    }
+
+    /* ── Hierarchy ── */
+    function viewTree() { alert('Hierarchy — wire to your modal'); }
+
+    /* ── Logout ── */
+    function logout() { window.location.href = '/loginform'; }
+</script>
 
 </body>
 </html>
