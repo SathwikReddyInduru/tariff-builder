@@ -1,12 +1,16 @@
 window.onload = function () {
     sessionStorage.removeItem('pkgType');
     sessionStorage.removeItem('pkgSubType');
+    sessionStorage.removeItem('state');
+    sessionStorage.removeItem('selectedSvcs');
+    sessionStorage.removeItem('configName');
 };
 
 function selectType(type) {
     sessionStorage.setItem('pkgType', type);
     document.getElementById('typeSection').classList.add('hidden');
     document.getElementById('subTypeSection').classList.remove('hidden');
+    document.querySelector('.main-title').textContent = 'Select Category';
 }
 
 function selectSubType(subType) {

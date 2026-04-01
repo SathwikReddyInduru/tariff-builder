@@ -118,6 +118,24 @@
         </main>
     </div>
 
+    <div id="treeModal" onclick="closeTree()">
+        <div class="tree-card" onclick="event.stopPropagation()">
+            <h2>Configuration Summary</h2>
+            <div class="tree-body" id="treeBody">
+                <div class="tree-header">
+                    <h3 id="treeName">Unnamed Package</h3>
+                    <span id="treeMeta">| NORMAL | Retail</span>
+                </div>
+                <div class="tree-row" id="treeMain">📦 Main Service Plan: None</div>
+                <div class="tree-row" id="treeDatp">➕ DATP Components: 0 items</div>
+                <div class="tree-row" id="treeAatp">🛒 AATP Components: 0 items</div>
+                <hr class="tree-divider">
+                <div class="tree-charge" id="treeCharge"><b>Charge: RM 0.00</b> | <b>Ends: Permanent</b></div>
+            </div>
+            <button class="tree-close-btn" onclick="closeTree()">Close Preview</button>
+        </div>
+    </div>
+
     <footer class="footer">
         <p>© 2026 XIUS</p>
     </footer>

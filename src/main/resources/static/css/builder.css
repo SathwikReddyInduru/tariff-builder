@@ -21,7 +21,7 @@ body {
 /* ===== LAYOUT ===== */
 .app-container {
     display: flex;
-    height: 100vh;
+    height: calc(100vh - 70px);
 }
 
 /* ===== STEP RAIL ===== */
@@ -183,11 +183,11 @@ body {
 .stage {
     width: 100%;
     max-width: 1000px;
-    padding: 40px;
+    padding: 40px 40px 120px 40px;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    height: calc(100vh - 80px);
+    height: calc(100vh - 150px);
 }
 
 /* ===== GUIDE ===== */
@@ -256,9 +256,9 @@ body {
 }
 
 .config-panel {
-    position: sticky;
-    bottom: 40px;
-    left: 64%;
+    position: absolute;           /* relative to .workspace */
+    bottom: 30px;
+    left: 50%;                    /* centers within .workspace only, not full viewport */
     transform: translateX(-50%);
     background: var(--sidebar-dark);
     padding: 12px 35px;
@@ -267,6 +267,7 @@ body {
     align-items: center;
     gap: 25px;
     z-index: 100;
+    white-space: nowrap;
 }
 
 .btn-primary {
@@ -476,6 +477,93 @@ body {
     font-weight: 500;
     text-align: center;
     line-height: 50px;
+}
+
+/* ===== HIERARCHY MODAL ===== */
+#treeModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+#treeModal.open {
+    display: flex;
+}
+
+.tree-card {
+    background: white;
+    width: 500px;
+    max-width: 90vw;
+    padding: 40px;
+    border-radius: 32px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+}
+
+.tree-card h2 {
+    color: #1e293b;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
+
+.tree-body{
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.tree-header {
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 10px;
+}
+
+.tree-header h3 {
+    color: var(--primary);
+    margin-top: 1px;
+}
+
+.tree-header span {
+    font-size: 11px;
+    font-weight: 800;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+.tree-row {
+    font-size: 16px;
+    color: var(--text-h);
+    margin-top: 15px;
+}
+
+.tree-divider {
+    border: none;
+    border-top: 1px dashed #ccc;
+    margin: 15px 0 10px;
+}
+
+.tree-charge{
+    color: #1e293b;
+}
+
+.tree-charge b {
+    color: #1e293b;
+}
+
+.tree-close-btn {
+    width: 100%;
+    margin-top: 30px;
+    padding: 10px 30px;
+    background: var(--success);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-weight: 800;
+    cursor: pointer;
+    word-spacing: 1px;
 }
 
 /* ===== UTIL ===== */

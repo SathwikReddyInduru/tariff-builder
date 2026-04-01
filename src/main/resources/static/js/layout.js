@@ -1,39 +1,52 @@
+function getState() {
+    return JSON.parse(sessionStorage.getItem('state') ||
+        '{"s2":null,"s3":[],"s4":[],"price":"","publicityCode":"","endDate":"","isCorporate":false}');
+}
+
+function saveState(state) {
+    sessionStorage.setItem('state', JSON.stringify(state));
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('configName');
+    if (!input) return;
+
+    // Restore saved name
+    const savedName = sessionStorage.getItem('configName') || '';
+    input.value = savedName;
+
+    // Save on every keystroke so navigation never loses it
+    input.addEventListener('input', () => {
+        sessionStorage.setItem('configName', input.value);
+    });
+});
+
+// ── Step access guard ──
 function checkStepAccess(step) {
-
     const type = sessionStorage.getItem('pkgType');
-
     if (step > 1 && !type) {
         alert("Please select PREPAID or POSTPAID in Step 1");
         return false;
     }
-
     return true;
 }
 
-/* ── Module switcher ── */
+// ── Module switcher ──
 function switchModule(m) {
-    // toggle mod-btn active
     document.getElementById('m-pkg').classList.toggle('active', m === 'pkg');
     document.getElementById('m-reload').classList.toggle('active', m === 'reload');
 
     const isPkg = m === 'pkg';
-
-    // show/hide step rail and sidebar
     document.getElementById('stepRail').style.display = isPkg ? 'flex' : 'none';
     document.getElementById('sidebar').style.display = isPkg ? 'flex' : 'none';
-
-    // show/hide footer
     document.getElementById('footerActions').style.display = isPkg ? 'flex' : 'none';
 
-    // show/hide step stage vs reload stage
-    // the step stage is the <section class="stage"> injected by each step
     const stepStage = document.querySelector('.stage:not(#reloadStage)');
     if (stepStage) stepStage.classList.toggle('hidden', !isPkg);
-
     document.getElementById('reloadStage').classList.toggle('hidden', isPkg);
 }
 
-/* ── Save eReload ── */
+// ── Save eReload ──
 async function saveReload() {
     const payload = {
         rechargeId: document.getElementById('rechargeId').value,
@@ -55,22 +68,51 @@ async function saveReload() {
     } catch (e) { alert('Backend error.'); }
 }
 
-/* ── Save config (package) ── */
+// ── Save package config ──
 async function saveConfiguration() {
     const name = document.getElementById('configName').value;
     if (!name) { alert('Enter Configuration Name'); return; }
+
+    const state = getState();
+    const pkgType = sessionStorage.getItem('pkgType') || '';
+    const pkgSubType = sessionStorage.getItem('pkgSubType') || '';
+
+    const payload = { name, id: Date.now(), pkgType, pkgSubType, state };
+
     try {
         const res = await fetch('/api/v1/saveTariff', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, id: Date.now() })
+            body: JSON.stringify(payload)
         });
         if (res.ok) alert('Package Saved.');
     } catch (e) { alert('Backend error.'); }
 }
 
-/* ── Hierarchy ── */
-function viewTree() { alert('Hierarchy — wire to your modal'); }
+// ── Hierarchy modal ──
+function viewTree() {
+    const state = getState();
+    const name = document.getElementById('configName').value || 'Unnamed Package';
+    const type = sessionStorage.getItem('pkgType') || '';
+    const sub = sessionStorage.getItem('pkgSubType') || 'NORMAL';
 
-/* ── Logout ── */
+    document.getElementById('treeName').textContent = name;
+    document.getElementById('treeMeta').textContent = `${type ? type + ' | ' : ''}${sub} | ${state.isCorporate ? 'Corporate' : 'Retail'}`;
+    document.getElementById('treeMain').textContent = `📦 Main Service Plan: ${state.s2 ? state.s2.name : 'None'}`;
+    document.getElementById('treeDatp').textContent = `➕ DATP Components: ${(state.s3 || []).length} items`;
+    document.getElementById('treeAatp').textContent = `🛒 AATP Components: ${(state.s4 || []).length} items`;
+    document.getElementById('treeCharge').innerHTML = `<b>Charge: RM ${state.price || '0.00'}</b> | <b>Ends: ${state.endDate || 'Permanent'}</b>`;
+
+    document.getElementById('treeModal').classList.add('open');
+}
+
+function closeTree() {
+    document.getElementById('treeModal').classList.remove('open');
+}
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeTree();
+});
+
+// ── Logout ──
 function logout() { window.location.href = '/loginform'; }
