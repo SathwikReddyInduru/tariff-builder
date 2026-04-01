@@ -1,3 +1,8 @@
+window.onload = function () {
+    sessionStorage.removeItem('pkgType');
+    sessionStorage.removeItem('pkgSubType');
+};
+
 function selectType(type) {
     sessionStorage.setItem('pkgType', type);
     document.getElementById('typeSection').classList.add('hidden');
